@@ -41,16 +41,25 @@ def main():
         mode_sel = terminal_menu.show()
         ppa = input('Enter ppa: ')
         distro = input('Enter distro: ')
-        for i in file_path:
-            if mode_sel == 1:
-                for line in fileinput.input(f'{i}/debian/rules', inplace=True):
-                    line = line.rstrip('\r\n')
-                    print(line.replace('#export DH_VERBOSE=1', 'export DEB_BUILD_PROFILES=nodoc'))
+        if mode_sel == 1:
+            command = """
+            find . -name rules -exec sed -i 's/#export DH_VERBOSE=1/export DEB_BUILD_PROFILES=nodoc/g' {} +
+            find . -name control -exec sed -i '/Build-Depends-Indep:/d' {} +
+            find . -name control -exec sed -i '/qdoc-qt5/d' {} +
+            find . -name control -exec sed -i '/qhelpgenerator-qt5/d' {} +
+            find . -name control -exec sed -i '/qtattributionsscanner-qt5/d' {} +
+            find . -name control -exec sed -i '/qtbase5-doc-html/d' {} +
+            find . -name control -exec sed -i '/qttools5-dev-tools/d' {} +
+            find . -name control -exec sed -i '/qtwebsockets5-doc-html/d' {} +
+            """
+            subprocess.call(command, shell=True)
+            for i in file_path:
                 command = f'cd {i}; dpkg-source -b .'
                 subprocess.call(command, shell=True)
-            for d in dsc:
-                command = f'backportpackage -u {ppa} -d {distro} {d}'
-                subprocess.call(command, shell=True)
+        for d in dsc:
+            command = f'backportpackage -u {ppa} -d {distro} {d}'
+            subprocess.call(command, shell=True)
+
 
 if __name__ == "__main__":
     main()
