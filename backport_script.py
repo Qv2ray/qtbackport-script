@@ -39,6 +39,8 @@ def main():
                     dsc.append(d)
         terminal_menu = TerminalMenu(['doc', 'nodoc'])
         mode_sel = terminal_menu.show()
+        ppa = input('Enter ppa: ')
+        distro = input('Enter distro: ')
         for i in file_path:
             if mode_sel == 1:
                 for line in fileinput.input(f'{i}/debian/rules', inplace=True):
@@ -46,8 +48,6 @@ def main():
                     print(line.replace('#export DH_VERBOSE=1', '#export DH_VERBOSE=1\nexport DEB_BUILD_PROFILES=nodoc\n'))
                 command = f'cd {i}; dpkg-source -b .'
                 subprocess.call(command, shell=True)
-            ppa = input('Enter ppa: ')
-            distro = input('Enter distro: ')
             for d in dsc:
                 command = f'backportpackage -u {ppa} -d {distro} {d}'
                 subprocess.call(command, shell=True)
