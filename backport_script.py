@@ -45,12 +45,12 @@ def main():
             command = """
             find . -name rules -exec sed -i 's/#export DH_VERBOSE=1/export DEB_BUILD_PROFILES=nodoc/g' {} +
             find . -name control -exec sed -i '/Build-Depends-Indep:/d' {} +
-            find . -name control -exec sed -i '/qdoc-qt5/d' {} +
-            find . -name control -exec sed -i '/qhelpgenerator-qt5/d' {} +
-            find . -name control -exec sed -i '/qtattributionsscanner-qt5/d' {} +
-            find . -name control -exec sed -i '/qtbase5-doc-html/d' {} +
-            find . -name control -exec sed -i '/qttools5-dev-tools/d' {} +
-            find . -name control -exec sed -i '/qtwebsockets5-doc-html/d' {} +
+            find . -name control -exec sed -i '/qdoc-qt5.*<!nodoc>/d' {} +
+            find . -name control -exec sed -i '/qhelpgenerator-qt5.*<!nodoc>/d' {} +
+            find . -name control -exec sed -i '/qtattributionsscanner-qt5.*<!nodoc>/d' {} +
+            find . -name control -exec sed -i '/qtbase5-doc-html.*<!nodoc>/d' {} +
+            find . -name control -exec sed -i '/qttools5-dev-tools.*<!nodoc>/d' {} +
+            find . -name control -exec sed -i '/qtwebsockets5-doc-html.*<!nodoc>/d' {} +
             """
             subprocess.call(command, shell=True)
             for i in file_path:
