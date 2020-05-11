@@ -22,7 +22,7 @@ def main():
         subprocess.call(command, shell=True)
     elif main_sel == 1:
         while True:
-            qt_components = input('Enter the extra component name:')
+            qt_components = input('Enter the extra component name: ')
             if not qt_components == 'exit':
                 qtextra.append(qt_components)
             else:
@@ -46,8 +46,8 @@ def main():
                     print(line.replace('#export DH_VERBOSE=1', '#export DH_VERBOSE=1\nexport DEB_BUILD_PROFILES=nodoc\n'))
                 command = f'cd {i}; dpkg-source -b .'
                 subprocess.call(command, shell=True)
-            ppa = input('Enter ppa:')
-            distro = input('Enter distro')
+            ppa = input('Enter ppa: ')
+            distro = input('Enter distro: ')
             for d in dsc:
                 command = f'backportpackage -u {ppa} -d {distro} {d}'
                 subprocess.call(command, shell=True)
