@@ -40,6 +40,11 @@ def main():
         mode_sel = terminal_menu.show()
         ppa = input('Enter ppa: ')
         distro = input('Enter distro: ')
+        for i in file_path:
+            if distro == 'focal':
+                    for line in fileinput.input(f'{i}/debian/control', inplace=True):
+                        line = line.rstrip('\r\n')
+                        print(line.replace('debhelper-compat (= 13)', 'debhelper-compat (= 12)'))
         if mode_sel == 1:
             for i in file_path:
                 for line in fileinput.input(f'{i}/debian/rules', inplace=True):
