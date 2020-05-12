@@ -45,13 +45,13 @@ def main():
             for i in file_path:
                 for line in fileinput.input(f'{i}/debian/control', inplace=True):
                     if '<!nodoc>' in line and not 'Build-Profiles:' in line:
-                        line.replace(line, '')
+                        line = line.replace(line, '')
                         line.rstrip('\r\n')
                     print(line)
                 for line in fileinput.input(f'{i}/debian/rules', inplace=True):
                     if 'DH_VERBOSE=1' in line:
                         env = 'export DEB_BUILD_PROFILES=nodoc'
-                        line.replace(line, line+env)
+                        line = line.replace(line, line+env)
                         line.rstrip('\r\n')
                     print(line)
                 command = f'cd {i}; dpkg-source -b .'
