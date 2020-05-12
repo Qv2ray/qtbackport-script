@@ -43,9 +43,9 @@ def main():
         distro = input('Enter distro: ')
         if mode_sel == 1:
             for i in file_path:
-                for line in fileinput.input(f'{i}/debian/rules', inplace=True):
+                for line in fileinput.input(f'{i}/debian/rules'):
                     line = line.rstrip('\r\n')
-                    print(line.replace('#export DH_VERBOSE=1', 'export DEB_BUILD_PROFILES=nodoc'))
+                    print(repr(line))
                 command = f'cd {i}; dpkg-source -b .'
                 subprocess.call(command, shell=True)
         for d in dsc:
