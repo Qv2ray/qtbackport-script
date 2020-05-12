@@ -33,7 +33,7 @@ def main():
         dsc = []
         for d in os.listdir('.'):
             for component in qtbase:
-                if fnmatch(d, f'{component}*') and os.path.isdir(d):
+                if os.path.isdir(d):
                     file_path.append(d)
                 elif fnmatch(d, f'{component}*.dsc'):
                     dsc.append(d)
@@ -42,18 +42,18 @@ def main():
         ppa = input('Enter ppa: ')
         distro = input('Enter distro: ')
         if mode_sel == 1:
-            command = """
-            find . -name rules -exec sed -i 's/#export DH_VERBOSE=1/export DEB_BUILD_PROFILES=nodoc/g' {} +
-            find . -name control -exec sed -i '/Build-Depends-Indep:/d' {} +
-            find . -name control -exec sed -i '/qdoc-qt5.*<!nodoc>/d' {} +
-            find . -name control -exec sed -i '/qhelpgenerator-qt5.*<!nodoc>/d' {} +
-            find . -name control -exec sed -i '/qtattributionsscanner-qt5.*<!nodoc>/d' {} +
-            find . -name control -exec sed -i '/qtbase5-doc-html.*<!nodoc>/d' {} +
-            find . -name control -exec sed -i '/qttools5-dev-tools.*<!nodoc>/d' {} +
-            find . -name control -exec sed -i '/qtwebsockets5-doc-html.*<!nodoc>/d' {} +
-            """
-            subprocess.call(command, shell=True)
             for i in file_path:
+                for line in fileinput.input(f'{i}/debian/control', inplace=True):
+                    if '<!nodoc>' in line and not 'Build-Profiles:' in line:
+                        line.replace(line, '')
+                        line.rstrip('\r\n')
+                        print(line)
+                for line in fileinput.input(f'{i}/debian/rules', inplace=True):
+                    if 'DH_VERBOSE=1' in line:
+                        env = 'export DEB_BUILD_PROFILES=nodoc'
+                        line.replace(line, line+env)
+                        line.rstrip('\r\n')
+                        print(line)
                 command = f'cd {i}; dpkg-source -b .'
                 subprocess.call(command, shell=True)
         for d in dsc:
