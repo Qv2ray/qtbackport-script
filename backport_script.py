@@ -5,7 +5,7 @@ from simple_term_menu import TerminalMenu
 from fnmatch import fnmatch
 import os
 import fileinput
-
+import re
 
 def main():
     qtbase = [
@@ -44,10 +44,8 @@ def main():
         if mode_sel == 1:
             for i in file_path:
                 for line in fileinput.input(f'{i}/debian/rules'):
-                    if 'DH_VERBOSE=1' in line:
-                        line = line.rstrip('\r\n')
-                        line = line.replace(line, 'export DEB_BUILD_PROFILES=nodoc')
-                    print(repr(line))
+                    line = line.rstrip('\r\n')
+                    print(repr(re.sub('.*DH_VERBOSE=1', 'export DEB_BUILD_PROFILES=nodoc', line)))
                 command = f'cd {i}; dpkg-source -b .'
                 subprocess.call(command, shell=True)
         for d in dsc:
