@@ -46,7 +46,8 @@ def main():
                 for line in fileinput.input(f'{i}/debian/rules'):
                     if 'DH_VERBOSE=1' in line:
                         line = line.rstrip('\r\n')
-                        print(repr(line))
+                        line = line.replace(line, 'export DEB_BUILD_PROFILES=nodoc')
+                    print(repr(line))
                 command = f'cd {i}; dpkg-source -b .'
                 subprocess.call(command, shell=True)
         for d in dsc:
