@@ -59,7 +59,7 @@ def main():
                 command = f'cd {i}; dpkg-source -b .'
                 subprocess.call(command, shell=True)
         for d in dsc:
-            command = f'backportpackage -u {ppa} -d {distro} {d}'
+            command = f'backportpackage -u {ppa} -d {distro} -y {d}'
             subprocess.call(command, shell=True)
 
 
