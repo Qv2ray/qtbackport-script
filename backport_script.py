@@ -43,17 +43,9 @@ def main():
         distro = input('Enter distro: ')
         if mode_sel == 1:
             for i in file_path:
-                for line in fileinput.input(f'{i}/debian/control', inplace=True):
-                    line = line.rstrip('\r\n')
-                    if '<!nodoc>' in line and not 'Build-Profiles:' in line:
-                        line = line.replace(line, '')
-                    print(line)
                 for line in fileinput.input(f'{i}/debian/rules', inplace=True):
                     line = line.rstrip('\r\n')
-                    if 'DH_VERBOSE=1' in line:
-                        env = 'export DEB_BUILD_PROFILES=nodoc'
-                        line = line.replace(line, line+env)
-                    print(line)
+                    print(line.replace('#export DH_VERBOSE=1', 'export DEB_BUILD_PROFILES=nodoc'))
                 command = f'cd {i}; dpkg-source -b .'
                 subprocess.call(command, shell=True)
         for d in dsc:
