@@ -46,17 +46,17 @@ def main():
                 for line in fileinput.input(f'{i}/debian/rules', inplace=True):
                     line = line.rstrip('\r\n')
                     print(re.sub('.*DH_VERBOSE=1', 'export DEB_BUILD_PROFILES=nodoc', line))
-                for line in fileinput.input(f'{i}/debian/control'):
+                for line in fileinput.input(f'{i}/debian/control', inplace=True):
                     line = line.rstrip('\r\n')
                     if 'nodoc' in line and not 'Build-Profiles:' in line:
                         pass
                     else:
-                        print(repr(line))
-        #         command = f'cd {i}; dpkg-source -b .'
-        #         subprocess.call(command, shell=True)
-        # for d in dsc:
-        #     command = f'backportpackage -u {ppa} -d {distro} {d}'
-        #     subprocess.call(command, shell=True)
+                        print(line)
+                command = f'cd {i}; dpkg-source -b .'
+                subprocess.call(command, shell=True)
+        for d in dsc:
+            command = f'backportpackage -u {ppa} -d {distro} {d}'
+            subprocess.call(command, shell=True)
 
 
 if __name__ == "__main__":
