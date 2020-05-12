@@ -32,11 +32,10 @@ def main():
         file_path = []
         dsc = []
         for d in os.listdir('.'):
-            for component in qtbase:
-                if os.path.isdir(d):
-                    file_path.append(d)
-                elif fnmatch(d, f'{component}*.dsc'):
-                    dsc.append(d)
+            if os.path.isdir(d):
+                file_path.append(d)
+            elif fnmatch(d, '*.dsc'):
+                dsc.append(d)
         terminal_menu = TerminalMenu(['doc', 'nodoc'])
         mode_sel = terminal_menu.show()
         ppa = input('Enter ppa: ')
