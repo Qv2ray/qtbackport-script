@@ -49,7 +49,7 @@ def main():
                 for line in fileinput.input(f'{i}/debian/control'):
                     line = line.rstrip('\r\n')
                     if not 'Build-Profiles:' in line:
-                        line = re.sub('.*<!nodoc>.\?+', '', line)
+                        line = re.sub('.*<!nodoc>.*', '', line)
                     print(repr(line))
         #         command = f'cd {i}; dpkg-source -b .'
         #         subprocess.call(command, shell=True)
