@@ -7,6 +7,7 @@ import os
 import fileinput
 import re
 
+
 def main():
     qtbase = [
         'qtbase-opensource-src', 'qtxmlpatterns-opensource-src', 'qtdeclarative-opensource-src', 'qtlocation-opensource-src',
@@ -40,22 +41,24 @@ def main():
         mode_sel = terminal_menu.show()
         ppa = input('Enter ppa: ')
         distro = input('Enter distro: ')
-        if distro == 'focal':
-            for i in file_path:
-                    for line in fileinput.input(f'{i}/debian/control', inplace=True):
-                        line = line.rstrip('\r\n')
-                        print(line.replace('debhelper-compat (= 13)', 'debhelper-compat (= 12)'))
-        if mode_sel == 1:
-            for i in file_path:
+        for i in file_path:
+            if distro == 'focal':
+                for line in fileinput.input(f'{i}/debian/control', inplace=True):
+                    line = line.rstrip('\r\n')
+                    print(line.replace('debhelper-compat (= 13)',
+                                       'debhelper-compat (= 12)'))
+            if mode_sel == 1:
                 for line in fileinput.input(f'{i}/debian/rules', inplace=True):
                     line = line.rstrip('\r\n')
-                    print(re.sub('.*DH_VERBOSE=1', 'export DEB_BUILD_PROFILES=nodoc', line))
+                    print(re.sub('.*DH_VERBOSE=1',
+                                 'export DEB_BUILD_PROFILES=nodoc', line))
                 for line in fileinput.input(f'{i}/debian/control', inplace=True):
                     line = line.rstrip('\r\n')
                     if 'nodoc' in line and not 'Build-Profiles:' in line:
                         pass
                     else:
                         print(line)
+            if 'qtxmlpatterns' in i or mode_sel == 1:
                 command = f'cd {i}; dpkg-source -b .'
                 subprocess.call(command, shell=True)
         for d in dsc:
