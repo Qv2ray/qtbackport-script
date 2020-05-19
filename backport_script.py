@@ -42,11 +42,6 @@ def main():
         ppa = input('Enter ppa: ')
         distro = input('Enter distro: ')
         for i in file_path:
-            if distro == 'focal':
-                for line in fileinput.input(f'{i}/debian/control', inplace=True):
-                    line = line.rstrip('\r\n')
-                    print(line.replace('debhelper-compat (= 13)',
-                                       'debhelper-compat (= 12)'))
             if mode_sel == 1:
                 for line in fileinput.input(f'{i}/debian/rules', inplace=True):
                     line = line.rstrip('\r\n')
@@ -58,7 +53,6 @@ def main():
                         pass
                     else:
                         print(line)
-            if 'qtxmlpatterns' in i or mode_sel == 1:
                 command = f'cd {i}; dpkg-source -b .'
                 subprocess.call(command, shell=True)
         for d in dsc:
