@@ -53,8 +53,20 @@ def main():
                         pass
                     else:
                         print(line)
-                command = f'cd {i}; dpkg-source -b .'
-                subprocess.call(command, shell=True)
+            for symbol in os.listdir(f'{i}/debian'):
+                if fnmatch(symbol, '*.symbols'):
+                    for line in fileinput.input(f'{i}/debian/{symbol}', inplace=True):
+                        line = line.rstrip('\r\n')
+                        if '* Build-Depends-Packages' in line:
+                            pass
+                        else:
+                            print(line)
+            for line in fileinput.input(f'{i}/debian/control', inplace=True):
+                line = line.rstrip('\r\n')
+                print(re.sub(r'dpkg-dev \(>= 1\.20\.0\)',
+                             'dpkg-dev (>= 1.17.14)', line))
+            command = f'cd {i}; dpkg-source -b .'
+            subprocess.call(command, shell=True)
         for d in dsc:
             command = f'backportpackage -u {ppa} -d {distro} -y {d}'
             subprocess.call(command, shell=True)
