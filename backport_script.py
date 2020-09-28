@@ -46,7 +46,7 @@ def main():
                 for line in fileinput.input(f'{i}/debian/rules', inplace=True):
                     line = line.rstrip('\r\n')
                     print(re.sub('.*DH_VERBOSE=1',
-                                 'export DEB_BUILD_PROFILES=nodoc', line))
+                                 'export DEB_BUILD_PROFILES=nodoc\nexport DEB_BUILD_OPTIONS=nocheck\nexport DPKG_GENSYMBOLS_CHECK_LEVEL=0', line))
                 for line in fileinput.input(f'{i}/debian/control', inplace=True):
                     line = line.rstrip('\r\n')
                     if 'nodoc' in line and not 'Build-Profiles:' in line:
