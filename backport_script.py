@@ -56,6 +56,13 @@ def main():
                 for line in fileinput.input(f'{i}/debian/rules', inplace=True):
                     sys.stdout.write(re.sub('.*DH_VERBOSE=1',
                                             'export DEB_BUILD_OPTIONS=nocheck\nexport DPKG_GENSYMBOLS_CHECK_LEVEL=0', line))
+            for symbol in os.listdir(f'{i}/debian'):
+                if fnmatch(symbol, '*.symbols'):
+                    for line in fileinput.input(f'{i}/debian/{symbol}', inplace=True):
+                        if '* Build-Depends-Packages' in line:
+                            pass
+                        else:
+                            sys.stdout.write(line)
             for line in fileinput.input(f'{i}/debian/control', inplace=True):
                 sys.stdout.write(re.sub(r'dpkg-dev \(>= 1\.20\.0\)',
                                         'dpkg-dev (>= 1.17.14)', line))
