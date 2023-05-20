@@ -7,9 +7,11 @@ First, you need python3 ofc. And then run the command below:
 ```bash
 # optional, create the virtual environment to prevent your system from being dirty :)
 $ python -m venv venv
+# optional, activating your virtual environment (depends on your shell)
+$ source venv/bin/activate
 # Install the pip dependencies
 $ pip install -r requirements.txt
-# Adding "deb-src" stuff if you needed
+# adding "deb-src" stuff if you needed
 $ vim /etc/apt/sources.list.d/qt_backport.list
 # We are good now :)
 $ python backport_script.py
