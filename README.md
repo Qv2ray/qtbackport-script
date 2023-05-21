@@ -13,6 +13,8 @@ $ source venv/bin/activate
 $ pip install -r requirements.txt
 # adding "deb-src" stuff if you needed
 $ vim /etc/apt/sources.list.d/qt_backport.list
+# create work directory
+$ mkdir build && cd build
 # We are good now :)
 $ python backport_script.py
 ```
