@@ -11,8 +11,10 @@ import sys
 
 def main():
     qtbase = [
-        'qtbase-opensource-src', 'qtxmlpatterns-opensource-src', 'qtdeclarative-opensource-src', 'qtlocation-opensource-src',
-        'qtsensors-opensource-src', 'qtwebsockets-opensource-src', 'qtwebchannel-opensource-src', 'qtwebkit-opensource-src', 'qttools-opensource-src'
+        'qtbase-opensource-src', 'qtxmlpatterns-opensource-src', 'qtdeclarative-opensource-src',
+        'qtlocation-opensource-src',
+        'qtsensors-opensource-src', 'qtwebsockets-opensource-src', 'qtwebchannel-opensource-src',
+        'qtwebkit-opensource-src', 'qttools-opensource-src'
     ]
 
     qtextra = []
@@ -46,16 +48,21 @@ def main():
             if mode_sel == 1:
                 for line in fileinput.input(f'{i}/debian/rules', inplace=True):
                     sys.stdout.write(re.sub('.*DH_VERBOSE=1',
-                                            'export DEB_BUILD_PROFILES=nodoc\nexport DEB_BUILD_OPTIONS=nocheck\nexport DPKG_GENSYMBOLS_CHECK_LEVEL=0', line))
+                                            'export DEB_BUILD_PROFILES := $(DEB_BUILD_PROFILES) nodoc\nexport '
+                                            'DEB_BUILD_OPTIONS := $(DEB_BUILD_OPTIONS) nocheck\nexport '
+                                            'DPKG_GENSYMBOLS_CHECK_LEVEL=0',
+                                            line))
                 for line in fileinput.input(f'{i}/debian/control', inplace=True):
-                    if 'nodoc' in line and not 'Build-Profiles:' in line:
+                    if 'nodoc' in line and 'Build-Profiles:' not in line:
                         pass
                     else:
                         sys.stdout.write(line)
             else:
                 for line in fileinput.input(f'{i}/debian/rules', inplace=True):
                     sys.stdout.write(re.sub('.*DH_VERBOSE=1',
-                                            'export DEB_BUILD_OPTIONS=nocheck\nexport DPKG_GENSYMBOLS_CHECK_LEVEL=0', line))
+                                            'export DEB_BUILD_OPTIONS := $(DEB_BUILD_OPTIONS) nocheck\nexport '
+                                            'DPKG_GENSYMBOLS_CHECK_LEVEL=0',
+                                            line))
             for symbol in os.listdir(f'{i}/debian'):
                 if fnmatch(symbol, '*.symbols'):
                     for line in fileinput.input(f'{i}/debian/{symbol}', inplace=True):
