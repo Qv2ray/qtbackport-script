@@ -21,63 +21,63 @@ def main():
 
     terminal_menu = TerminalMenu(['qtbase', 'qtextra'])
     main_sel = terminal_menu.show()
+    command = ""
     if main_sel == 0:
         command = f"apt-get source {' '.join(qtbase)}"
-        subprocess.call(command, shell=True)
     elif main_sel == 1:
         while True:
-            qt_components = input('Enter the extra component name: ')
-            if not qt_components == 'exit':
+            qt_components = input('Enter the extra component name (Press Enter to build): ')
+            if not qt_components == '':
                 qtextra.append(qt_components)
             else:
                 break
         command = f"apt-get source {' '.join(qtextra)}"
-    if main_sel == 0:
-        file_path = []
-        dsc = []
-        for d in os.listdir('.'):
-            if os.path.isdir(d):
-                file_path.append(d)
-            elif fnmatch(d, '*.dsc'):
-                dsc.append(d)
-        terminal_menu = TerminalMenu(['doc', 'nodoc'])
-        mode_sel = terminal_menu.show()
-        ppa = input('Enter ppa: ')
-        distro = input('Enter distro: ')
-        for i in file_path:
-            if mode_sel == 1:
-                for line in fileinput.input(f'{i}/debian/rules', inplace=True):
-                    sys.stdout.write(re.sub('.*DH_VERBOSE=1',
-                                            'export DEB_BUILD_PROFILES := $(DEB_BUILD_PROFILES) nodoc\nexport '
-                                            'DEB_BUILD_OPTIONS := $(DEB_BUILD_OPTIONS) nocheck\nexport '
-                                            'DPKG_GENSYMBOLS_CHECK_LEVEL=0',
-                                            line))
-                for line in fileinput.input(f'{i}/debian/control', inplace=True):
-                    if 'nodoc' in line and 'Build-Profiles:' not in line:
+    subprocess.call(command, shell=True)
+    file_path = []
+    dsc = []
+    for d in os.listdir('.'):
+        if os.path.isdir(d):
+            file_path.append(d)
+        elif fnmatch(d, '*.dsc'):
+            dsc.append(d)
+    terminal_menu = TerminalMenu(['doc', 'nodoc'])
+    mode_sel = terminal_menu.show()
+    ppa = input('Enter ppa: ')
+    distro = input('Enter distro: ')
+    for i in file_path:
+        if mode_sel == 1:
+            for line in fileinput.input(f'{i}/debian/rules', inplace=True):
+                sys.stdout.write(re.sub('.*DH_VERBOSE=1',
+                                        'export DEB_BUILD_PROFILES := $(DEB_BUILD_PROFILES) nodoc\nexport '
+                                        'DEB_BUILD_OPTIONS := $(DEB_BUILD_OPTIONS) nocheck\nexport '
+                                        'DPKG_GENSYMBOLS_CHECK_LEVEL=0',
+                                        line))
+            for line in fileinput.input(f'{i}/debian/control', inplace=True):
+                if 'nodoc' in line and 'Build-Profiles:' not in line:
+                    pass
+                else:
+                    sys.stdout.write(line)
+        else:
+            for line in fileinput.input(f'{i}/debian/rules', inplace=True):
+                sys.stdout.write(re.sub('.*DH_VERBOSE=1',
+                                        'export DEB_BUILD_OPTIONS := $(DEB_BUILD_OPTIONS) nocheck\nexport '
+                                        'DPKG_GENSYMBOLS_CHECK_LEVEL=0',
+                                        line))
+        for symbol in os.listdir(f'{i}/debian'):
+            if fnmatch(symbol, '*.symbols'):
+                for line in fileinput.input(f'{i}/debian/{symbol}', inplace=True):
+                    if '* Build-Depends-Packages' in line:
                         pass
                     else:
                         sys.stdout.write(line)
-            else:
-                for line in fileinput.input(f'{i}/debian/rules', inplace=True):
-                    sys.stdout.write(re.sub('.*DH_VERBOSE=1',
-                                            'export DEB_BUILD_OPTIONS := $(DEB_BUILD_OPTIONS) nocheck\nexport '
-                                            'DPKG_GENSYMBOLS_CHECK_LEVEL=0',
-                                            line))
-            for symbol in os.listdir(f'{i}/debian'):
-                if fnmatch(symbol, '*.symbols'):
-                    for line in fileinput.input(f'{i}/debian/{symbol}', inplace=True):
-                        if '* Build-Depends-Packages' in line:
-                            pass
-                        else:
-                            sys.stdout.write(line)
-            for line in fileinput.input(f'{i}/debian/control', inplace=True):
-                sys.stdout.write(re.sub(r'dpkg-dev \(>= 1\.20\.0\)',
-                                        'dpkg-dev (>= 1.17.14)', line))
-            command = f'cd {i}; dpkg-source -b .'
-            subprocess.call(command, shell=True)
-        for d in dsc:
-            command = f'backportpackage -r -u {ppa} -d {distro} -y {d}'
-            subprocess.call(command, shell=True)
+        for line in fileinput.input(f'{i}/debian/control', inplace=True):
+            sys.stdout.write(re.sub(r'dpkg-dev \(>= 1\.20\.0\)',
+                                    'dpkg-dev (>= 1.17.14)', line))
+        command = f'cd {i}; dpkg-source -b .'
+        subprocess.call(command, shell=True)
+    for d in dsc:
+        command = f'backportpackage -r -u {ppa} -d {distro} -y {d}'
+        subprocess.call(command, shell=True)
 
 
 if __name__ == "__main__":
